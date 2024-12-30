@@ -1,9 +1,12 @@
 package kr.isamin.newYear.events;
 
+import kr.isamin.newYear.NewYear;
+import kr.isamin.newYear.objects.DiscordManager;
 import kr.isamin.newYear.objects.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +16,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.time.Duration;
 
 public class PlayerJoinEventListener implements Listener {
+    private final NewYear plugin;
+
+    public PlayerJoinEventListener(NewYear plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -44,6 +52,15 @@ public class PlayerJoinEventListener implements Listener {
         }
 
         manager.setNickname(player, manager.getNickname(player));
+
+        DiscordManager discordManager = DiscordManager.getInstance();
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            discordManager.send(
+                    MiniMessage.miniMessage().serialize(manager.getNickname(player)),
+                    "# 입장",
+                    player.getUniqueId()
+            );
+        });
 
         Component joinMessage = Component.text()
                 .append(manager.getNickname(player).color(NamedTextColor.YELLOW))

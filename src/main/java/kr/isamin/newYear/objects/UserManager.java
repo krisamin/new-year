@@ -4,9 +4,12 @@ import kr.isamin.newYear.NewYear;
 import kr.isamin.newYear.libs.ConfigData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -179,6 +182,7 @@ public class UserManager {
     public TextComponent setNickname(UUID uuid, TextComponent nickname, boolean updateTab) {
         Player player = this.getPlayerSafety(uuid);
         player.displayName(nickname);
+        this.changePlayerDisplayName(player, nickname);
         if (updateTab) player.playerListName(nickname);
 
         YamlConfiguration config = this.config.configData();
@@ -206,5 +210,31 @@ public class UserManager {
     }
     public TextComponent setNickname(String playerName, TextComponent nickname) {
         return this.setNickname(this.getPlayerSafety(playerName).getUniqueId(), nickname, true);
+    }
+
+    private void changePlayerDisplayName(Player player, Component nickname) {
+        String teamName = player.getUniqueId().toString() + "_team";
+        Scoreboard scoreboard = this.plugin.getServer().getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam(teamName);
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam(teamName);
+        }
+
+        team.addEntry(player.getName());
+
+        Component prefix = Component.text()
+                .append(Component.text("["))
+                .append(nickname)
+                .append(Component.text("] "))
+                .color(NamedTextColor.YELLOW)
+                .build();
+
+        team.displayName(nickname);
+        team.prefix(prefix);
+
+        for (Player onlinePlayer : this.plugin.getServer().getOnlinePlayers()) {
+            onlinePlayer.setScoreboard(scoreboard);
+        }
     }
 }

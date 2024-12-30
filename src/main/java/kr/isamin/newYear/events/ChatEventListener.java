@@ -36,8 +36,9 @@ public class ChatEventListener implements Listener {
         Player player = event.getPlayer();
         TextComponent nickname = manager.getNickname(player);
 
-        this.plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            sendToDiscord(
+        DiscordManager discordManager = DiscordManager.getInstance();
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            discordManager.send(
                     MiniMessage.miniMessage().serialize(nickname),
                     MiniMessage.miniMessage().serialize(event.originalMessage()),
                     player.getUniqueId()
@@ -52,36 +53,5 @@ public class ChatEventListener implements Listener {
                         .build()
         );
         event.renderer(renderer);
-    }
-
-    private void sendToDiscord(String name, String message, UUID uuid) {
-        try {
-            DiscordManager discordManager = DiscordManager.getInstance();
-            String hook = discordManager.getHook();
-
-            this.plugin.getLogger().info(name);
-            this.plugin.getLogger().info(message);
-
-            Map<String, Object> jsonMap = new HashMap<>();
-            jsonMap.put("username", name);
-            jsonMap.put("content", message);
-            jsonMap.put("avatar_url", "https://crafthead.net/avatar/" + uuid);
-            JSONObject json = new JSONObject(jsonMap);
-
-            URI uri = URI.create(hook);
-            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = json.toString().getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
-
-            conn.getResponseCode();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

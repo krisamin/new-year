@@ -12,6 +12,15 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.json.simple.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class DiscordManager {
     private static DiscordManager instance;
@@ -98,7 +107,33 @@ public class DiscordManager {
         return config.configData().getString("role");
     }
 
-    public String getHook() {
-        return config.configData().getString("hook");
+    public void send(String name, String message, UUID uuid) {
+        try {
+            String hook = config.configData().getString("hook");
+
+            this.plugin.getLogger().info(name);
+            this.plugin.getLogger().info(message);
+
+            Map<String, Object> jsonMap = new HashMap<>();
+            jsonMap.put("username", name);
+            jsonMap.put("content", message);
+            jsonMap.put("avatar_url", "https://crafthead.net/avatar/" + uuid);
+            JSONObject json = new JSONObject(jsonMap);
+
+            URI uri = URI.create(hook);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.toString().getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            conn.getResponseCode();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

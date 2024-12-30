@@ -21,9 +21,9 @@ public final class NewYear extends JavaPlugin {
         new RealtimeManager(this);
         new DiscordManager(this);
 
-        this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerQuitEventListener(), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerQuitEventListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerDeathEventListener(this), this);
         this.getServer().getPluginManager().registerEvents(new ChatEventListener(this), this);
 
         registerNicknameCommand();

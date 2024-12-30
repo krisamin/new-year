@@ -1,8 +1,11 @@
 package kr.isamin.newYear.events;
 
+import kr.isamin.newYear.NewYear;
+import kr.isamin.newYear.objects.DiscordManager;
 import kr.isamin.newYear.objects.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,12 +13,27 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class PlayerDeathEventListener implements Listener {
+    private final NewYear plugin;
+
+    public PlayerDeathEventListener(NewYear plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         UserManager manager = UserManager.getInstance();
 
         Component originalDeathMessage = event.deathMessage();
+
+        DiscordManager discordManager = DiscordManager.getInstance();
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            discordManager.send(
+                    MiniMessage.miniMessage().serialize(manager.getNickname(player)),
+                    "# 죽음",
+                    player.getUniqueId()
+            );
+        });
 
         Component deathMessage = Component.text()
                 .append(manager.getNickname(player).color(NamedTextColor.YELLOW))
@@ -24,6 +42,7 @@ public class PlayerDeathEventListener implements Listener {
                 .append(Component.text(" "))
                 .append(originalDeathMessage.color(NamedTextColor.GRAY))
                 .build();
+
         event.deathMessage(deathMessage);
     }
 
