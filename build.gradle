@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'kr.isamin'
@@ -19,6 +20,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    implementation("net.dv8tion:JDA:5.2.2")
 }
 
 def targetJavaVersion = 21
@@ -47,3 +49,10 @@ processResources {
         expand props
     }
 }
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+tasks.build.dependsOn tasks.shadowJar

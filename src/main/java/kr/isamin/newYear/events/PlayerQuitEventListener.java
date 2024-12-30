@@ -1,6 +1,6 @@
 package kr.isamin.newYear.events;
 
-import kr.isamin.newYear.objects.NicknameManager;
+import kr.isamin.newYear.objects.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,7 +14,7 @@ public class PlayerQuitEventListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        NicknameManager manager = NicknameManager.getInstance();
+        UserManager manager = UserManager.getInstance();
 
         TextComponent nickname = manager.getNickname(player);
 

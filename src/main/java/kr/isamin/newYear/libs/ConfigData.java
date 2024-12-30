@@ -64,7 +64,7 @@ public class ConfigData {
         try {
             this.configData.save(this.configFile);
         } catch (IOException e) {
-            this.plugin.getLogger().severe(this.filename() + " 데이터 저장 실패!");
+            this.plugin.getLogger().info(this.filename() + " 데이터 저장 실패!");
             e.printStackTrace();
         }
     }

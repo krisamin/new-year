@@ -1,7 +1,7 @@
 package kr.isamin.newYear.commands;
 
 import kr.isamin.newYear.NewYear;
-import kr.isamin.newYear.objects.NicknameManager;
+import kr.isamin.newYear.objects.UserManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
@@ -88,21 +88,21 @@ public class NicknameCommand implements TabExecutor {
     }
 
     private void setNicknameCommand(Player target, String nickname, CommandSender sender) {
-        NicknameManager manager = NicknameManager.getInstance();
+        UserManager manager = UserManager.getInstance();
         manager.setNickname(target, Component.text(nickname));
 
         sender.sendMessage(Component.text("닉네임이 변경되었습니다: " + nickname).color(NamedTextColor.GREEN));
     }
 
     private void resetNicknameCommand(Player target, CommandSender sender) {
-        NicknameManager manager = NicknameManager.getInstance();
+        UserManager manager = UserManager.getInstance();
         manager.setNickname(target, Component.text(target.getName()));
 
         sender.sendMessage(Component.text("닉네임이 초기화되었습니다.").color(NamedTextColor.GREEN));
     }
 
     private void getNicknameCommand(Player target, CommandSender sender) {
-        NicknameManager manager = NicknameManager.getInstance();
+        UserManager manager = UserManager.getInstance();
         String nickname = manager.getNickname(target).content();
 
         sender.sendMessage(Component.text("현재 닉네임: " + nickname).color(NamedTextColor.GREEN));

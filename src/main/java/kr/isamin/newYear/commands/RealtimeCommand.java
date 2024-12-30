@@ -1,7 +1,6 @@
 package kr.isamin.newYear.commands;
 
 import kr.isamin.newYear.NewYear;
-import kr.isamin.newYear.objects.NicknameManager;
 import kr.isamin.newYear.objects.RealtimeManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -9,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
