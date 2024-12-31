@@ -66,29 +66,28 @@ public class RealtimeManager {
         }
     }
 
-    private boolean isDay(LocalTime currentTime, LocalTime sunriseTime, LocalTime sunsetTime) {
-        return !currentTime.isBefore(sunriseTime) && currentTime.isBefore(sunsetTime);
-    }
-
     public int getRealtimeToMinecraftTime() {
-        LocalTime currentTime = LocalTime.now();
-        long dayLength = ChronoUnit.MINUTES.between(sunriseTime, sunsetTime);
-        long nightLength = 1440 - dayLength;
+        LocalTime now = LocalTime.now();
 
-        if (isDay(currentTime, sunriseTime, sunsetTime)) {
-            // 낮 시간 (23000 -> 12000)
-            long minutesSinceSunrise = ChronoUnit.MINUTES.between(sunriseTime, currentTime);
-            double progressOfDay = (double) minutesSinceSunrise / dayLength;
-            return (int) (23000 + (progressOfDay * (12000 - 23000 + 24000))) % 24000;
+        int totalSecondsInDay = 24 * 60 * 60;
+        int currentSeconds = now.getHour() * 3600 + now.getMinute() * 60 + now.getSecond();
+
+        int sunriseSeconds = sunriseTime.getHour() * 3600 + sunriseTime.getMinute() * 60 + sunriseTime.getSecond();
+        int sunsetSeconds = sunsetTime.getHour() * 3600 + sunsetTime.getMinute() * 60 + sunsetTime.getSecond();
+
+        double minecraftTime;
+
+        if (currentSeconds < sunriseSeconds) {
+            minecraftTime = 12000 + (double)(currentSeconds + totalSecondsInDay - sunsetSeconds) * (23000 - 12000)
+                    / (sunriseSeconds + totalSecondsInDay - sunsetSeconds);
+        } else if (currentSeconds < sunsetSeconds) {
+            minecraftTime = 23000 + (double)(currentSeconds - sunriseSeconds) * (12000 - 23000)
+                    / (sunsetSeconds - sunriseSeconds);
         } else {
-            // 밤 시간 (12000 -> 23000)
-            LocalTime adjustedTime = currentTime;
-            if (currentTime.isBefore(sunriseTime)) {
-                adjustedTime = currentTime.plusHours(24);
-            }
-            long minutesSinceSunset = ChronoUnit.MINUTES.between(sunsetTime, adjustedTime);
-            double progressOfNight = (double) minutesSinceSunset / nightLength;
-            return (int) (12000 + (progressOfNight * (23000 - 12000 + 24000))) % 24000;
+            minecraftTime = 12000 + (double)(currentSeconds - sunsetSeconds) * (23000 - 12000)
+                    / (sunriseSeconds + totalSecondsInDay - sunsetSeconds);
         }
+
+        return (int)(minecraftTime % 24000);
     }
 }
