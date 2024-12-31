@@ -79,7 +79,7 @@ public class RealtimeManager {
             // 낮 시간 (23000 -> 12000)
             long minutesSinceSunrise = ChronoUnit.MINUTES.between(sunriseTime, currentTime);
             double progressOfDay = (double) minutesSinceSunrise / dayLength;
-            return (int) (23000 + (progressOfDay * 13000)) % 24000;
+            return (int) (23000 + (progressOfDay * (12000 - 23000 + 24000))) % 24000;
         } else {
             // 밤 시간 (12000 -> 23000)
             LocalTime adjustedTime = currentTime;
@@ -88,7 +88,7 @@ public class RealtimeManager {
             }
             long minutesSinceSunset = ChronoUnit.MINUTES.between(sunsetTime, adjustedTime);
             double progressOfNight = (double) minutesSinceSunset / nightLength;
-            return (int) (12000 + (progressOfNight * 11000));
+            return (int) (12000 + (progressOfNight * (23000 - 12000 + 24000))) % 24000;
         }
     }
 }
